@@ -60,7 +60,6 @@ def get_all_routes_between(start, end, date):
 	            AND (Start.Stasjonsnavn = "{start}" AND EndStation.Stasjonsnavn = "{end}")
 	            AND (Start.TabellID = EndStation.TabellID)
 	            AND ((Start.Tid < EndStation.Tid) OR Start.Tid > "23:00") -- Fungerer ikke når toget går før midatt over natten
-
             ORDER BY Start.Tid
         """)
         output.append(cursor.fetchall())
@@ -69,6 +68,8 @@ def get_all_routes_between(start, end, date):
 """
 e) En bruker skal kunne registrere seg i kunderegisteret
 """
+def get_customer(id): 
+    return cursor.execute(f'''SELECT * FROM Kunde WHERE epost = "{id}"''').fetchone()
 
 def register_customer(email, firstname, lastname, phone):
     try:
@@ -97,7 +98,7 @@ def get_stations_between(start, end, route):
     return str(cursor.fetchall()).replace("('", '').replace("',)", '').replace('[', '').replace(']', '').split(', ')
 
 # as the name suggests:
-def get_all_availble_seats_between_stations(start, end, route):
+def get_all_available_seats_between_stations(start, end, route):
     taken_seats = []
 
     # get all seats booked for every station up until the end station,
@@ -113,7 +114,6 @@ def get_all_availble_seats_between_stations(start, end, route):
 	        NATURAL JOIN SitteplassPåBillett
 	        NATURAL JOIN Billett
         WHERE ForekomstID = {route}
-	        AND StartStasjon = "{start}"
 	        AND EndeStasjon = "{station}"
             AND EXISTS (SELECT SitteplassID 
 		        FROM SitteplassPåBillett 
@@ -138,59 +138,47 @@ def get_all_availble_seats_between_stations(start, end, route):
     # format return to str list to compare with taken seats:
     available_seats = str(cursor.fetchall()).replace('(', '').replace(',)', '').replace('[', '').replace(']', '').split(', ')
 
-    # removes every item in taken_seats form available_seats:
-    return [i for i in available_seats if i not in taken_seats]
+    # removes every item in taken_seats from available_seats:
+    seats = [i for i in available_seats if i not in taken_seats]
 
-
-
-
-def get_available_seats(start, stop, route):
-
-    cursor.execute(get_stations_between(start, stop, route))
-    stations = cursor.fetchall()
-
-    unavailable_trips = []
-
-    for station in stations:
-        cursor.execute(f'''
-            SELECT Dato, RuteID, VognType, SitteplassID, BillettID, StartStasjon, EndeStasjon
-            FROM TogRuteForekomst
-                NATURAL JOIN Vognoppsett
-                NATURAL JOIN SattSammenAv
-                NATURAL JOIN Vogn
-                NATURAL JOIN Sitteplass
-                NATURAL JOIN SitteplassPåBillett
-                NATURAL JOIN Billett
-            WHERE ForekomstID = {route}
-                AND RuteID = {route}
-                AND StartStasjon = "{start}"
-                AND EndeStasjon = "{station}"
-                AND EXISTS (SELECT SitteplassID 
-                    FROM SitteplassPåBillett 
-                    WHERE SitteplassPåBillett.SitteplassID = Sitteplass.SitteplassID
-                )
-        ''')
-        unavailable_trips.append(cursor.fetchall())
+    # fetch all available compartments for a route: (not ready because the table doesn't exist yet)
+    """cursor.execute(f'''
+        SELECT SoveplassID
+        FROM TogRuteForekomst
+            NATURAL JOIN SattSammenAv
+            NATURAL JOIN Soveplass
+        WHERE ForekomstID = {route}
+            AND ForekomstID = OppsettID
+            AND NOT EXISTS (SELECT SoveplassID
+                FROM SoveplassPåBillett
+                WHERE SoveplassPåBillett.SoveplassID = Soveplass.SoveplassID
+            )
+    ''')
+    """
+    compartments = [] #str(cursor.fetchall()).replace('(', '').replace(',)', '')
     
-    print(unavailable_trips)
+    
+    return f"""
+    Sitteplasser: 
+        {seats}
+    Soveplasser: 
+        {compartments}
+    """
 
-
-def get_customer(id): 
-    return cursor.execute(f'''SELECT * FROM Kunde WHERE epost = "{id}"''').fetchone()
 
 # tests
 def test():
     # register_customer(id := (str(random.randbytes(2)) + "mail@ntnu.no"), "Ola", "Nordmann", "12345678")
     print(f'''
     - - - Start testing... - - -
-
     Fetch: {str(get_all_routes('Steinkjer', 'Mandag')).replace('(', '').replace(',)', '')})
+    
     Between: {get_all_routes_between('Trondheim', 'Mosjøen', '2023-04-03')})
+    
     Register Fail: {register_customer("mail@ntnu.no", "Ola", "Nordmann", "12345678")}
     Register Success: {register_customer(str(random.randbytes(2)) + "mail@ntnu.no", "Ola", "Nordmann", "12345678")}
-
-    Get available seats: {get_available_seats('Trondheim', 'Mo i Rana', 1)}
-
+    
+    Get available seats Trondheim and Mo i Rana: {get_all_available_seats_between_stations('Trondheim', 'Mo i Rana', 1)}
     - - - End testing - - -\n''')
 
 # an empty input will quit the while loop
@@ -201,35 +189,32 @@ while(action := input('''Actions:
     Between - Get all routes running between two chosen station on a said day.
     Register - Register new customer.
     Available - Get available seats
-
     Press 'Enter' to quit...
     
     Select action: ''')):
     if (action == "Test"):
-        print(get_all_availble_seats_between_stations('Trondheim', 'Mosjøen', 1))
-        break
-    
-    if (action == 'Fetch'):
+        test()
+
+    elif (action == "Fetch"):
         print(str(get_all_routes(input('Station: '), 
                             input('Day: '))).replace('(', '').replace(',)', ''))
    
-    if (action == "Between"):
+    elif (action == "Between"):
         print(get_all_routes_between(input('Start Station: '), 
                                      input('End Station: '), 
                                      input('Enter a date in YYYY-MM-DD format: ')))
     
-    if (action == "Register"):
+    elif (action == "Register"):
         register_customer(input('Email: '), 
                           input('First name: '), 
                           input('Last name: '), 
                           input('Phone: '))
         
-    if (action == "Available"):
-        print(get_all_availble_seats_between_stations(input('Start Station: '), 
+    elif (action == "Available"):
+        print(get_all_available_seats_between_stations(input('Start Station: '), 
                           input('End Station: '), 
                           input('Route: ')))
     
 
 print('Closing database...')
 database.close()
-
