@@ -22,8 +22,7 @@ class test_methods(u.TestCase):
     def test_get_customer(self):
         self.assertEqual(get_customer('viktort@ntnu.no'),  ('viktort@ntnu.no', 'Viktor', 'Tingstad', '004702800'))
         self.assertIsNone(get_customer('ikkeEnBruker'))
-    
-        print('Test get_customer()')
+
 
 
     def test_get_stations_between(self):
@@ -32,17 +31,7 @@ class test_methods(u.TestCase):
         self.assertEqual(get_stations_between('Fauske', 'Mosjøen'), ['Mo i Rana'])
         self.assertEqual(get_stations_between('Trondheim', 'Bodø'), ['Steinkjer', 'Mosjøen', 'Mo i Rana', 'Fauske'])
         self.assertEqual(get_stations_between('Mo i Rana', 'Trondheim'), ['Mosjøen', 'Steinkjer'])
-        print('Test get_stations_between()')
 
-
-   
-    """  def test_get_all_available_seats_between_stations(self):
-        self.assertEqual(get_all_available_seats_between_stations('Trondheim', 'Mosjøen', 1), ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'])
-        self.assertEqual(get_all_available_seats_between_stations('Steinkjer', 'Bodø', 1), ['5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'])
-        self.assertEqual(get_all_available_seats_between_stations('Mosjøen', 'Fauske', 1), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'])
-        self.assertEqual(get_all_available_seats_between_stations('Trondheim', 'Mo i Rana', 3), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'])
-        self.assertEqual(get_all_available_seats_between_stations('Trondheim', 'Steinkjer', 2), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']), 
-        print('Test get_all_available_seats_between_stations()') """
 
 def test(): 
     u.main()
