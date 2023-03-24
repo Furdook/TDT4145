@@ -304,5 +304,5 @@ def get_future_tickets(email):
             AND Dato >= "{datetime.date.today()}"
     ''')"""
     # tmp.append(str(cursor.fetchall()).replace('(', '').replace(',)', '').replace('[', '').replace(']', '').split(', '))
-    return tmp2
+    return '\n' + str(tmp2).replace('(', '').replace(',)', '')
 

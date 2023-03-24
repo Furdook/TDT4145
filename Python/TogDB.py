@@ -6,7 +6,8 @@ from Queries import get_all_routes, get_all_routes_between, register_customer, g
 
 
 # an empty input will quit the while loop
-while(action := input('''Actions:
+while(action := input('''
+    Actions:
  
     F - Get all routes stopping at a chosen station on said day.   
     B - Get all routes running between two chosen stations on a chosen day.
@@ -21,8 +22,8 @@ while(action := input('''Actions:
     Select action: ''').lower()):
     
     if (action == "f"):
-        print(str(get_all_routes(input('Station: '), 
-                                 input('Day: '))).replace('(', '').replace(',)', ''))
+        print('\n' + str(get_all_routes(input('Station: '), 
+                                        input('Day: '))).replace('(', '').replace(',)', ''))
    
     elif (action == "b"):
         raw = get_all_routes_between(input('Start Station: '), 
@@ -37,7 +38,7 @@ while(action := input('''Actions:
                 for i in row:
                     tmp += str(i) + "\t| "
                 tmp += "\n"
-        print(tmp) 
+        print(f'\n{tmp}') 
     
     elif (action == "r"):
         register_customer(input('Email: '), 
