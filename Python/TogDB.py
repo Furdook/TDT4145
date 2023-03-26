@@ -19,7 +19,7 @@ while(action := input('''
 
     Select action: ''').lower()):
     
-    if (action == "f"): # validate day!!! TODO TODO TODO
+    if (action == "f"): 
         query = str(get_all_routes(station := input('Station: '), day := input('Day: ')))
         
         for i in ['(', ')', '[', ']', ' ,']:
