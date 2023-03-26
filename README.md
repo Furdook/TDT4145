@@ -98,7 +98,7 @@ reiser. Denne funksjonaliteten skal programmeres.
 
 # Vedlegg
 
-Rute: Trondheim -> Steinkjer -> Mosjøen -> Mo i Rana -> Fauske -> Bodø
+### Rute: Trondheim -> Steinkjer -> Mosjøen -> Mo i Rana -> Fauske -> Bodø
 
 - Trondheim (5,1 moh) -> Steinkjer (3,6 moh): 120 km, dobbeltspor
 - Steinkjer -> Mosjøen (6,8 moh): 280 km, enkeltspor
