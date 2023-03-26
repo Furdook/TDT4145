@@ -67,7 +67,6 @@ while(action := input('''
         query = input('Email: ')
 
         print(f'\nFuture tickets for {query}:\n')
-        print(get_future_tickets(query))
         for i in get_future_tickets(query):
             print(f'Dato: {i[0]}\tFra: {i[1]}\tTil: {i[2]}\tSitte/Soveplassnummer: {i[3]}')
 
