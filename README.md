@@ -1,4 +1,7 @@
 # Problembeskrivelse
+
+### *Informasjon om hvordan programmet kjøres kan finnes i DB2.pdf i DB2 mappen*
+
 Det skal lages en database for jernbanen i Norge. For å få hensiktsmessig kompleksitet og
 arbeidsmengde, må vi selvfølgelig forenkle beskrivelsen av jernbanesystemet en god del. I arbeidet
 med prosjektet vil det bli behov for å gjøre en del forutsetninger. De forutsetningene dere gjør må
