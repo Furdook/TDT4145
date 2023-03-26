@@ -13,7 +13,6 @@ while(action := input('''
     R - Register a new customer.
     A - Buy tickets for a route between two stations.
     O - Get all future orders for a customer.
-    T - Run unit tests.
 
     Press 'Enter' to quit...
     
