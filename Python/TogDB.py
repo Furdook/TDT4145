@@ -1,5 +1,4 @@
-from Tests import *
-from Queries import get_all_routes, get_all_routes_between, register_customer, get_future_tickets
+from Queries import *
 
 # SQLite3 Dokumentasjon:
 # https://docs.python.org/3/library/sqlite3.html
@@ -21,39 +20,57 @@ while(action := input('''
 
     Select action: ''').lower()):
     
-    if (action == "f"):
-        print('\n' + str(get_all_routes(input('Station: '), 
-                                        input('Day: '))).replace('(', '').replace(',)', ''))
-   
-    elif (action == "b"):
-        raw = get_all_routes_between(input('Start Station: '), 
-                                     input('End Station: '), 
-                                     input('Enter a date in YYYY-MM-DD format: '))
+    if (action == "f"): # validate day!!! TODO TODO TODO
+        query = str(get_all_routes(station := input('Station: '), day := input('Day: ')))
         
+        for i in ['(', ')', '[', ']', ' ,']:
+            query = query.replace(i, ' ')
+
+        # check if station and day is valid and exists in database:
+        if (query == 'Invalid input...'):
+            print(f'\n{query}')
+            continue
+
+        print(f'\n\tRute: {query} kjører gjennom {station} på {day}')
+    
+    
+    elif (action == "b"):
+        raw = get_all_routes_between(start := input('Start Station: '), 
+                                     end   := input('End Station: '), 
+                                     date  := input('Enter a date in YYYY-MM-DD format: '))
+        
+        if (raw == 'Invalid input...'):
+            print(f'\n{raw}')
+            continue
+
         # return formatting:
-        tmp = ""#"| ID\t| StartStasjon\t| Avg.\t| SluttStasjon\t| Ank.\t| Dag\t\t|\n"
+        tmp = ""
         for day in raw:
             for row in day:
                 tmp += "| "
                 for i in row:
                     tmp += str(i) + "\t| "
                 tmp += "\n"
-        print(f'\n{tmp}') 
+
+        print(f'\nRutetabell fra {date} mellom {start} og {end}:\n{tmp}') 
     
     elif (action == "r"):
-        register_customer(input('Email: '), 
-                          input('First name: '), 
-                          input('Last name: '), 
-                          input('Phone: '))
+        print(register_customer(input('Email: ').lower(), 
+                                input('First name: '), 
+                                input('Last name: '), 
+                                input('Phone: ')))
         
     elif (action == "a"):
+        print('\nIf you wish to see all routes between two stations, please use the "B" action.\n')
         buy_ticket()
     
     elif (action == "o"):
-        print(get_future_tickets(input('Email: ')))
+        query = input('Email: ')
 
-    elif (action == "t"):
-        test()
+        print(f'\nFuture tickets for {query}:\n')
+        print(get_future_tickets(query))
+        for i in get_future_tickets(query):
+            print(f'Dato: {i[0]}\tFra: {i[1]}\tTil: {i[2]}\tSitte/Soveplassnummer: {i[3]}')
 
 
 database.close()

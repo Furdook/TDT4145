@@ -24,7 +24,7 @@ def validate_email(email):
     return re.fullmatch(regex, email) != None
 
 
-# ???
+# 
 def format_available_seats(seats, compartments):
     return f"""
     Sitteplasser: 
@@ -34,8 +34,20 @@ def format_available_seats(seats, compartments):
     """
 
 
+# check that station exists in database:
+def station_exists(station):
+    cursor.execute(f"""
+        SELECT Stasjonsnavn
+        FROM StasjonITabell
+        WHERE Stasjonsnavn = '{station}'
+    """)
+    return cursor.fetchone() != None
+
+
 # Get all routes stopping on a chosen station on a chosen day:
 def get_all_routes(station, day):
+    if (day not in weekdays.values() or not station_exists(station)): return 'Invalid input...'
+
     cursor.execute(f"""
         SELECT TogruteTabell.RuteID
         FROM TogruteKjørerDag
@@ -51,6 +63,8 @@ def get_all_routes(station, day):
 def get_all_routes_between(start, end, date):
     year, month, day = map(int, date.split('-'))
     date = int(datetime.date(year, month, day).strftime("%u"))
+
+    if (not station_exists(start) or not station_exists(end)): return 'Invalid input...'
 
     output = []
 
@@ -93,6 +107,9 @@ def register_customer(email, firstname, lastname, phone):
 
 # get all stations between a start station and an en station:
 def get_stations_between(start, end, route):
+
+    if (not station_exists(start) or not station_exists(end)): return 'Invalid input...'
+
     # fetch all station names between start and (including) end station:
     cursor.execute(f"""
         SELECT Stasjonsnavn
@@ -106,6 +123,9 @@ def get_stations_between(start, end, route):
 
 # fetch all stations coming after a chosen station on a spesific route:
 def get_all_stations_after(station, route):
+
+    if (not station_exists(station)): return 'Invalid input...'
+
     cursor.execute(f'''
         SELECT Stasjonsnavn
         FROM StasjonITabell
@@ -120,6 +140,9 @@ def get_all_stations_after(station, route):
 
 # fetch all takens seats on a route to a station:
 def fetch_seats(station, route):
+
+    if (not station_exists(station)): return 'Invalid input...'
+
     cursor.execute(f'''
         SELECT SitteplassID
         FROM TogRuteForekomst
@@ -148,6 +171,8 @@ def fetch_seats(station, route):
 # return all available seatIDs between a start and an end station for a chosen route:
 def get_all_available_seats_between_stations(start, end, route):
     taken_seats = []
+
+    if (not station_exists(start) or not station_exists(end)): return 'Invalid input...'
 
     # get all seats booked for every station up until the end station,
     # or else we would only get seats taken between two said stations:
@@ -262,47 +287,32 @@ def buy_ticket():
         
     database.commit()
 
+
 # For en bruker skal man kunne finne all informasjon om de kjøpene hen har gjort for fremtidige reiser.
 def get_future_tickets(email):
-    # tmp = "| Dato\t\t| StartStasjon\t| EndeStasjon\t| \n"
+
+    if (get_customer(email) == 'None'): return 'Invalid input...'
+
     cursor.execute(f'''
-        SELECT Dato, StartStasjon, EndeStasjon, BillettID
+        SELECT DISTINCT Dato, StartStasjon, EndeStasjon, SitteplassID
         FROM Kundeordre
             NATURAL JOIN Billett
             NATURAL JOIN TogRuteForekomst
+            NATURAL JOIN SitteplassPåBillett
         WHERE Kunde = "{email}"
             AND Dato > "{datetime.date.today()}"
-            AND BillettID NOT NULL  -- removes test entities
     ''')
     tmp = cursor.fetchall()
-    tmp2 = []
 
-    for i in tmp:
-        cursor.execute(f'''
-        SELECT SitteplassID
-        FROM Billett
-	        NATURAL JOIN SitteplassPåBillett
-        WHERE BillettID = {i[-1]}
-        ''')
-        tmp2.append(cursor.fetchall())
-    
-
-
-    """ for row in cursor.fetchall():
-        tmp += '| '
-        for i in row:
-            tmp += i + '\t| '
-        tmp += '\n' """
-    
-    """cursor.execute(f'''
-        SELECT ForekomstID, StartStasjon, EndeStasjon, SitteplassID, SoveplassID
+    cursor.execute(f'''
+        SELECT DISTINCT Dato, StartStasjon, EndeStasjon, SoveplassID
         FROM Kundeordre
             NATURAL JOIN Billett
             NATURAL JOIN TogRuteForekomst
-            NATURAL JOIN SoveplassPåBillett
+            NATURAL JOIN SoveplassPåBillett 
         WHERE Kunde = "{email}"
-            AND Dato >= "{datetime.date.today()}"
-    ''')"""
-    # tmp.append(str(cursor.fetchall()).replace('(', '').replace(',)', '').replace('[', '').replace(']', '').split(', '))
-    return '\n' + str(tmp2).replace('(', '').replace(',)', '')
+            AND Dato > "{datetime.date.today()}"
+    ''')
+
+    return tmp + cursor.fetchall()
 
