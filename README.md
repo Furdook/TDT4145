@@ -106,9 +106,13 @@ Rute: Trondheim -> Steinkjer -> Mosjøen -> Mo i Rana -> Fauske -> Bodø
 - Mo i Rama -> Fauske (34,0 moh): 170 km, enkeltspor
 - Fauske -> Bodø (4,1 moh): 60 km, enkeltspor
 
-1. En sittevogn har tre rader, med fire seter per rad, totalt tolv sitteplasser per sittevogn.
+### Togruter
+  1. Denne togruten kjøres alle hverdager og har et vognoppsett med to sittevogner
+  2. Denne togruten kjøres alle dager og har et vognoppsett med en sittevogn fulgt en sovevogn 
+  3. Denne togruten kjører alle hverdager og har et vognoppsett med en sittevogn 
 
-2. En sovevogn har fire sovekupéer med to senger hver, totalt åtte soveplasser per sovevogn.
+-  En sittevogn har tre rader, med fire seter per rad, totalt tolv sitteplasser per sittevogn.
+-  En sovevogn har fire sovekupéer med to senger hver, totalt åtte soveplasser per sovevogn.
 
 *Rutetabeller er ikke tatt med, men de kan finnes i TogDB.sql eller i TogDB.db om ønskelig*
 
