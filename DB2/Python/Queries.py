@@ -79,7 +79,7 @@ def get_all_routes_between(start, end, date):
             WHERE Dag = "{weekdays[date + i]}"
 	            AND (Start.Stasjonsnavn = "{start}" AND EndStation.Stasjonsnavn = "{end}")
 	            AND (Start.TabellID = EndStation.TabellID)
-	            AND ((Start.Tid < EndStation.Tid) OR Start.Tid > "23:00") -- Fungerer ikke når toget går før midatt over natten
+	            AND ((Start.Tid < EndStation.Tid) OR Start.Tid > "23:00") 
             ORDER BY Start.Tid
         """)
         output.append(cursor.fetchall())
