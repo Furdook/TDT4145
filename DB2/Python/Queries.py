@@ -203,7 +203,7 @@ def get_all_available_seats_between_stations(start, end, route):
     # removes every item in taken_seats from available_seats:
     seats = [i for i in available_seats if i not in taken_seats]
 
-    # fetch all available compartments for a route: (not ready because the table doesn't exist yet)
+    # fetch all available compartments for a route: 
     cursor.execute(f'''
         SELECT SoveplassID
         FROM TogRuteForekomst
